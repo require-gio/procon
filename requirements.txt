@@ -1,0 +1,6 @@
+scopy
+itertools
+operator
+pm4py
+typing
+uuid
