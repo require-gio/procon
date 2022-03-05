@@ -419,15 +419,8 @@ def __search(sync_net, ini, fin, cost_function, skip, ret_tuple_as_trans_desc=Fa
     decorate_places_preset_trans(sync_net)
 
     estimation_net, cost_function = (sync_net, cost_function) if is_petri_net(sync_net) else construct_estimation_net(sync_net, cost_function)
-    #print(is_petri_net(estimation_net))
-    #print(is_petri_net(sync_net))
     incidence_matrix = inc_mat_construct(estimation_net)
     ini_vec, fin_vec, cost_vec = utils.__vectorize_initial_final_cost(incidence_matrix, ini, fin, cost_function)
-
-    from pm4py.visualization.petri_net import visualizer as pn_visualizer
-
-    #gviz = pn_visualizer.apply(estimation_net, ini, fin)
-    #pn_visualizer.view(gviz)
 
     closed = set()
 

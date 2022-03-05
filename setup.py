@@ -1,7 +1,6 @@
 import setuptools
 from os.path import dirname, join
 
-
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
@@ -10,14 +9,14 @@ def read_file(filename):
         return f.read()
 
 setuptools.setup(
-    name="procon",                     # This is the name of the package
-    version="0.0.1",                        # The initial release version
-    author="Giorgi Lomidze",                     # Full name of the author
+    name="procon",
+    version="0.0.1",
+    author="Giorgi Lomidze",
     author_email="giorgi@giolom.com",
     description="Conformance Checking on BPMN models",
-    long_description=long_description,      # Long description read from the the readme file
+    long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=setuptools.find_packages(),    # List of all python modules to be installed
+    packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU GPLL v3 License",
@@ -25,8 +24,12 @@ setuptools.setup(
     ],
     url='https://github.com/require-gio/procon',
     license='GPL 3.0',
-    python_requires='>=3.6',                # Minimum version requirement of the package
-    py_modules=["procon"],             # Name of the python package
-    package_dir={'':'procon'},     # Directory of the source code of the package
-    install_requires=read_file("requirements_stable.txt").split("\n")  # Install other dependencies if any
+    python_requires='>=3.7',
+    py_modules=["procon"],
+    install_requires=read_file("requirements.txt").split("\n"),
+    project_urls={
+        'Documentation': 'https://github.com/require-gio/procon',
+        'Source': 'https://github.com/require-gio/procon',
+        'Tracker': 'https://github.com/require-gio/procon/issues',
+    }
 )

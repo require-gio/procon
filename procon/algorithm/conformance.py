@@ -15,11 +15,13 @@
     along with Procon.  If not, see <https://www.gnu.org/licenses/>.
 '''
 from procon.conversion import converter
+from procon.conversion.converter import INCLUDE_EVENTS
 from procon.objects.bpmn import importer as bpmn_importer
 from procon.algorithm import alignments
 from procon.objects.petri_net.utils import is_petri_net
 from pm4py.objects.petri_net.utils import check_soundness
 from pm4py.algo.filtering.pandas.attributes import attributes_filter
+from procon.objects.bpmn.obj import BPMN
 
 
 from pm4py.util import constants as pm4_constants
@@ -95,7 +97,7 @@ def move_stats(alignments):
                 syncStats[moveTuple[1]] += 1
     return modelStats, syncStats, logStats, missStats, logPositions
 
-def apply(df, bpmn_graph, parameters=None):
+def compute_alignments(df, bpmn_graph, parameters=None):
     """
     Gets the bpmn model enhanced with alignment based conformance information
 
@@ -104,14 +106,14 @@ def apply(df, bpmn_graph, parameters=None):
     df
         input event log as dataframe
     bpmnString
-        bpmn model as xml string
+        bpmn model object
     parameters
         Parameters of the algorithm
 
     Returns
     ------------
-    enhancedBpmnString
-        bpmn model enhanced with conformance information
+    alignments
+        alignments between bpmn model and event data
     """
     if parameters is None:
         parameters = {}
@@ -121,7 +123,6 @@ def apply(df, bpmn_graph, parameters=None):
     case_id_glue = parameters[
         pm4_constants.PARAMETER_CONSTANT_CASEID_KEY] if pm4_constants.PARAMETER_CONSTANT_CASEID_KEY in parameters else CASE_CONCEPT_NAME
 
-    print(parameters)
     # convert bpmn to Reset net
     reset_net, initial_marking, final_marking = converter.apply(bpmn_graph, parameters=parameters)
 
@@ -157,22 +158,33 @@ def apply(df, bpmn_graph, parameters=None):
             futures.append(executor.submit(compute_alignment, sub_log, reset_net, initial_marking, final_marking, align_parameters))
         for i, future in enumerate(as_completed(futures)):
             if int(total_calculations / 100) > 0 and i % int(total_calculations / 100) == 0:
+                # TODO exchange with bar
                 print(str(int(i / total_calculations * 100) + 1) + " %")
             df_data.append(future.result())
    
-
     # put alignments into a list
     alignments = [alignment for alignmentList in df_data for key, alignment in alignmentList for _ in range(variants_dict[key])]
+   
+    return alignments
+
+
+def derive_statistics(alignments, df, bpmn_graph, parameters=None):
+    include_events = parameters[INCLUDE_EVENTS] if INCLUDE_EVENTS in parameters else True
+    activity_key = parameters[
+        pm4_constants.PARAMETER_CONSTANT_ACTIVITY_KEY] if pm4_constants.PARAMETER_CONSTANT_ACTIVITY_KEY in parameters else xes.DEFAULT_NAME_KEY
+
     # get statistics about how many model moves, synchronous moves, log moves etc. appeared
     modelStats, syncStats, logStats, missStats, logPositions = move_stats(alignments)
-
+    # count activity occurrences
     activities_count = attributes_filter.get_attribute_values(df, activity_key, parameters=parameters)
 
+    # create table from the obtained statistics
     result = []
     columns = ["Activity", "Occurrences", "Correct", "Wrong Position", "Missing"]
-    for t in reset_net.transitions:
-        activity = t.label
-        if activity != None:
+    for node in bpmn_graph.get_nodes():
+        if isinstance(node, (BPMN.IntermediateCatchEvent, BPMN.IntermediateThrowEvent, BPMN.Task)) or \
+            (isinstance(node, BPMN.BoundaryEvent) and include_events):
+            activity = node.get_name()
             missMoves = missStats[activity] if activity in missStats else 0
             modelLogMoves = (modelStats[activity] if activity in modelStats else 0) - missMoves
             syncMoves = syncStats[activity] if activity in syncStats else 0
@@ -181,6 +193,7 @@ def apply(df, bpmn_graph, parameters=None):
                 activity, occurrences, syncMoves, modelLogMoves, missMoves
             ])
 
+    # finally, encapsulate the data in a pandas dataframe indexed by activites and sorted by event occurrences
     result = pd.DataFrame(result, columns=columns)
     result.index = result["Activity"]
     result.drop("Activity", axis=1, inplace=True)
