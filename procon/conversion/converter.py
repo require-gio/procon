@@ -1,3 +1,19 @@
+'''
+    The following code owned by Procon and its author (More Info: https://github.com/require-gio/procon).
+
+    Procon is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Procon is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Procon.  If not, see <https://www.gnu.org/licenses/>.
+'''
 import uuid
 from enum import Enum
 
@@ -8,7 +24,6 @@ from procon.objects.petri_net.utils import add_arc_from_to, get_place_by_name, r
 from procon.objects.bpmn.utils import get_boundary_events_of_activity, get_all_nodes_inside_process, get_subprocesses_sorted_by_depth, \
     get_termination_events_of_subprocess, get_node_by_id
 from pm4py.util import exec_utils
-from procon.objects.petri_net import properties
 from collections import defaultdict
 from procon.objects.bpmn.obj import BPMN
 

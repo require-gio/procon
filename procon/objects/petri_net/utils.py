@@ -1,5 +1,6 @@
 '''
-    This file is part of PM4Py (More Info: https://pm4py.fit.fraunhofer.de).
+    The following code is mainly adopted from PM4Py (More Info: https://pm4py.fit.fraunhofer.de).
+    Changes regard the support for reset/inhibitor nets
 
     PM4Py is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,12 +18,12 @@
 import random
 import time
 from copy import copy, deepcopy
+import math
 
 from pm4py.objects.log.obj import Trace, Event
-from pm4py.objects.petri_net import properties
-from pm4py.objects.petri_net import semantics
+from procon.objects.petri_net import properties
 from pm4py.objects.petri_net.utils.networkx_graph import create_networkx_directed_graph
-from pm4py.objects.petri_net.obj import PetriNet, Marking
+from procon.objects.petri_net.obj import PetriNet, Marking
 from pm4py.util import xes_constants as xes_util
 import deprecation
 
@@ -187,7 +188,7 @@ def remove_place(net, place):
     return net
 
 
-def add_arc_from_to(fr, to, net, weight=1):
+def add_arc_from_to(fr, to, net, weight=1, properties=None):
     """
     Adds an arc from a specific element to another element in some net. Assumes from and to are in the net!
 
@@ -202,7 +203,29 @@ def add_arc_from_to(fr, to, net, weight=1):
     -------
     None
     """
-    a = PetriNet.Arc(fr, to, weight)
+    a = PetriNet.Arc(fr, to, weight, properties=properties)
+    net.arcs.add(a)
+    fr.out_arcs.add(a)
+    to.in_arcs.add(a)
+
+    return a
+
+def add_normal_arc_from_to(fr, to, net, weight=1):
+    """
+    Adds an arc from a specific element to another element in some net. Assumes from and to are in the net!
+
+    Parameters
+    ----------
+    fr: transition/place from
+    to:  transition/place to
+    net: net to use
+    weight: weight associated to the arc
+
+    Returns
+    -------
+    None
+    """
+    a = PetriNet.Arc(fr, to, weight, properties=None)
     net.arcs.add(a)
     fr.out_arcs.add(a)
     to.in_arcs.add(a)
@@ -350,6 +373,8 @@ def acyclic_net_variants(net, initial_marking, final_marking, activity_key=xes_u
     :return: variants: :class:`list` Set of variants - in the form of Trace objects - obtainable executing the net
 
     """
+    from procon.objects.petri_net import semantics
+
     active = {(initial_marking, ())}
     visited = set()
     variants = set()
@@ -527,17 +552,29 @@ def decorate_transitions_prepostset(net):
     net
         Petri net
     """
-    from pm4py.objects.petri_net.obj import Marking
+    from procon.objects.petri_net.obj import Marking
+
     for trans in net.transitions:
         sub_marking = Marking()
         add_marking = Marking()
+        reset_places = []
 
         for arc in trans.in_arcs:
             sub_marking[arc.source] = arc.weight
-            add_marking[arc.source] = -arc.weight
+            if is_reset_arc(arc):
+                add_marking[arc.source] = -math.inf
+                reset_places.append(arc.source)
+            elif is_inhibitor_arc(arc):
+                add_marking[arc.source] = 0
+            else:
+                add_marking[arc.source] = -arc.weight
+
         for arc in trans.out_arcs:
             if arc.target in add_marking:
-                add_marking[arc.target] = arc.weight + add_marking[arc.target]
+                if arc.target in reset_places:
+                    add_marking[arc.target] = arc.weight
+                else:
+                    add_marking[arc.target] = arc.weight + add_marking[arc.target]
             else:
                 add_marking[arc.target] = arc.weight
         trans.sub_marking = sub_marking
@@ -795,3 +832,9 @@ def remove_arc(net, arc):
     arc.target.in_arcs.remove(arc)
 
     return net
+
+def is_petri_net(net):
+    for arc in net.arcs:
+        if not is_normal_arc(arc):
+            return False
+    return True

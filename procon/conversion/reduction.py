@@ -1,8 +1,23 @@
-from pm4py.objects.petri_net.obj import PetriNet
-from pm4py.objects.petri_net.utils.petri_utils import remove_arc, remove_transition, remove_place, add_arc_from_to, normal_pre_set, normal_post_set, \
+'''
+    The following code owned by Procon and its author (More Info: https://github.com/require-gio/procon).
+
+    Procon is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Procon is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Procon.  If not, see <https://www.gnu.org/licenses/>.
+'''
+from procon.objects.petri_net.obj import PetriNet
+from procon.objects.petri_net.utils import remove_arc, remove_transition, remove_place, add_arc_from_to, normal_pre_set, normal_post_set, \
     is_reset_arc, is_normal_arc, is_inhibitor_arc, add_reset_arc_from_to, add_inhibitor_arc_from_to, reset_pre_set, reset_post_set, inhibitor_post_set, \
         inhibitor_pre_set
-from pm4py.objects.petri_net import properties
 from copy import copy
 import itertools
 from itertools import combinations, chain

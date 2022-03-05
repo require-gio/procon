@@ -1,3 +1,20 @@
+'''
+    The following code is mainly adopted from PM4Py (More Info: https://pm4py.fit.fraunhofer.de).
+    Changes relate to the support for reset/inhibitor nets.
+
+    PM4Py is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    PM4Py is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with PM4Py.  If not, see <https://www.gnu.org/licenses/>.
+'''
 from collections import Counter
 from copy import deepcopy
 from enum import Enum
@@ -63,11 +80,6 @@ class Marking(Counter):
 
 
 class PetriNet(object):
-    class NetType(Enum):
-        NORMAL = 1
-        RESET = 2
-        INHIBITOR = 3
-        RESET_INHIBITOR = 4
 
     class Place(object):
 
@@ -224,11 +236,6 @@ class PetriNet(object):
         out_arcs = property(__get_out_arcs)
         properties = property(__get_properties)
 
-    class ArcType(Enum):
-        NORMAL = 1
-        RESET = 2
-        INHIBITOR = 3
-
     class Arc(object):
 
         def __init__(self, source, target, weight=1, properties=None):
@@ -353,7 +360,7 @@ class PetriNet(object):
         return id(self) == id(other)
 
     def __deepcopy__(self, memodict={}):
-        from pm4py.objects.petri_net.utils.petri_utils import add_arc_from_to
+        from procon.objects.petri_net.utils import add_arc_from_to
         this_copy = PetriNet(self.name)
         memodict[id(self)] = this_copy
         for place in self.places:
@@ -365,7 +372,7 @@ class PetriNet(object):
             this_copy.transitions.add(trans_copy)
             memodict[id(trans)] = trans_copy
         for arc in self.arcs:
-            add_arc_from_to(memodict[id(arc.source)], memodict[id(arc.target)], this_copy, weight=arc.weight)
+            add_arc_from_to(memodict[id(arc.source)], memodict[id(arc.target)], this_copy, weight=arc.weight, properties=arc.properties)
         return this_copy
 
     name = property(__get_name, __set_name)

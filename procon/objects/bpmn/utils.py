@@ -141,16 +141,3 @@ def bpmn_graph_end_events_as_throw_events(bpmn_graph):
 
             events.append(node)
     return events
-
-"""
-For a given end event, we will find the diverging xor gate which is the source of the token
-def branch_xor_gate(event, bpmn_graph):
-    incoming_flow = event.get_in_arcs()[0]
-
-
-def follow_up_contains_closing_gate(event, bpmn_graph):
-    if isinstance(event, BPMN.NormalEndEvent) or isinstance(event, BPMN.Gateway) and event.get_gateway_direction() == BPMN.Gateway.Direction.CONVERGING:
-        return True
-    else:
-        return follow_up_contains_closing_gate(event, bpmn_graph):
-"""
