@@ -9,12 +9,28 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - 'release'
+    tags:
+      - "v*"
 
 jobs:
-  deploy:
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
 
+    steps:
+      - name: "Build & test"
+        run: |
+          echo "done!"
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+
+  deploy:
+    name: "Deploy"
     runs-on: ubuntu-latest
 
     steps:
