@@ -4,10 +4,6 @@ from os.path import dirname, join
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-def read_file(filename):
-    with open(join(dirname(__file__), filename)) as f:
-        return f.read()
-
 setuptools.setup(
     name="procon",
     version="0.0.1",
@@ -26,7 +22,11 @@ setuptools.setup(
     license='GPL 3.0',
     python_requires='>=3.7',
     py_modules=["procon"],
-    install_requires=read_file("requirements.txt").split("\n"),
+    install_requires=[
+        'pm4py==2.2.19.2',
+        'pm4pycvxopt',
+        'psutil'
+    ],
     project_urls={
         'Documentation': 'https://github.com/require-gio/procon',
         'Source': 'https://github.com/require-gio/procon',

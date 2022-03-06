@@ -97,14 +97,7 @@ class PetriNet(object):
         def __setstate__(self, state):
             self.__name = state[0]
             self.__in_arcs = set()
-            #for arc in state[1]:
-            #    arc.target = self
-            #    print(arc.source)
-            #    self.in_arcs.add(arc)
             self.__out_arcs = set()
-            #for arc in state[2]:
-            #    arc.source = self
-            #    self.__out_arcs.add(arc)
             self.__properties = state[1]
             self.ass_trans = set(state[2])
 
