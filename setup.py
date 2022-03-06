@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="procon",
-    version="0.0.1",
+    version="0.0.6",
     author="Giorgi Lomidze",
     author_email="giorgi@giolom.com",
     description="Conformance Checking on BPMN models",
@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: GNU GPLL v3 License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     url='https://github.com/require-gio/procon',
