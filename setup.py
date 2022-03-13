@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="procon",
-    version="0.0.9",
+    version="0.0.10",
     author="Giorgi Lomidze",
     author_email="giorgi@giolom.com",
     description="Conformance Checking on BPMN models",
