@@ -44,3 +44,18 @@ if __name__ == '__main__':
     # save the resulting dataframe to a csv file on your machine
     res.to_csv(os.path.join("conformance-result.csv"))
 ```
+
+Input BPMN model:\
+<img src="https://github.com/require-gio/procon/blob/release/images/example.png" alt="example" width="700" style="background-color: white"/>
+
+
+Output Table:\
+<img src="https://github.com/require-gio/procon/blob/release/images/example-result.png" alt="example-result" width="700" style="background-color: white"/>
+
+
+The meaning of the columns is as follows:
+* Index/Activity: Name of the activity
+* Occurrences: Total occurrences of the activity in the event log
+* ![#3d8a0e](https://via.placeholder.com/15/3d8a0e/000000?text=+) `Correct: Number of times the activity appeared at the desired point in time according to the process model`
+* ![#de9414](https://via.placeholder.com/15/de9414/000000?text=+) `Wrong Position: Number of times the activity appeared in a case in an undesired order`
+* ![#ea0a8e](https://via.placeholder.com/15/ea0a8e/000000?text=+) `Missing: Number of times the activity was completely missing in a case although it was expected to appear`
