@@ -275,6 +275,24 @@ class BPMN(object):
             gateway_direction = gateway_direction if gateway_direction is not None else BPMN.Gateway.Direction.UNSPECIFIED
             BPMN.Gateway.__init__(self, id, name, gateway_direction, in_arcs, out_arcs, process=process)
 
+    class ExclusiveEventBasedGateway(Gateway):
+        def __init__(self, id="", name="", instantiate=False, gateway_direction=None, in_arcs=None, out_arcs=None, process=None):
+            gateway_direction = gateway_direction if gateway_direction is not None else BPMN.Gateway.Direction.UNSPECIFIED
+            BPMN.Gateway.__init__(self, id, name, gateway_direction, in_arcs, out_arcs, process=process)
+            self.__instantiate = instantiate
+
+        def get_instantiate():
+            return self.__instantiate
+
+    class ParallelEventBasedGateway(Gateway):
+        def __init__(self, id="", name="", instantiate=False, gateway_direction=None, in_arcs=None, out_arcs=None, process=None):
+            gateway_direction = gateway_direction if gateway_direction is not None else BPMN.Gateway.Direction.UNSPECIFIED
+            BPMN.Gateway.__init__(self, id, name, gateway_direction, in_arcs, out_arcs, process=process)
+            self.__instantiate = instantiate
+
+        def get_instantiate():
+            return self.__instantiate
+
     # flow (arc) classes
 
     class Flow(object):

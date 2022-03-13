@@ -178,6 +178,23 @@ def parse_element(bpmn_graph, counts, curr_el, parents, incoming_dict, outgoing_
         bpmn_graph.add_node(inclusive_gateway)
         node = inclusive_gateway
         nodes_dict[id] = node
+    elif tag.endswith("eventbasedgateway"):
+        id = curr_el.get("id")
+        name = curr_el.get("name").replace("\r", "").replace("\n", "") if "name" in curr_el.attrib else ""
+        instantiate = (True if curr_el.get("instantiate") == "true" else False) if "instantiate" in curr_el.attrib else False
+        event_gateway_type = curr_el.get("eventGatewayType") if "eventGatewayType" in curr_el.attrib else "exclusive"
+        direction = BPMN.Gateway.Direction.UNSPECIFIED
+        try:
+            direction = BPMN.Gateway.Direction[curr_el.get("gatewayDirection").upper()]
+        except:
+            pass
+        if event_gateway_type == "Exclusive":
+            exclusive_event_gateway = BPMN.ExclusiveEventBasedGateway(id=curr_el.get("id"), instantiate=instantiate, name=name, gateway_direction=direction, process=process)
+        else:
+            exclusive_event_gateway = BPMN.ParallelEventBasedGateway(id=curr_el.get("id"), instantiate=instantiate, name=name, gateway_direction=direction, process=process)
+        bpmn_graph.add_node(exclusive_event_gateway)
+        node = exclusive_event_gateway
+        nodes_dict[id] = node
     elif tag.endswith("incoming"): # incoming flow of a node
         if node is not None:
             incoming_dict[curr_el.text.strip()] = node

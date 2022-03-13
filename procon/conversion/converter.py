@@ -147,7 +147,7 @@ def apply(bpmn_graph, parameters=None):
             # if this is a global end event, add it to final marking
             if isinstance(node, BPMN.NormalEndEvent) and node.get_process() == bpmn_graph.get_process_id():
                 fm[end_place] = 1
-        elif isinstance(node, BPMN.ParallelGateway):
+        elif isinstance(node, (BPMN.ParallelGateway, BPMN.ParallelEventBasedGateway)):
             if node.get_gateway_direction() == BPMN.Gateway.Direction.DIVERGING or len(node.get_out_arcs()) > 1:
                 in_arc_place = flow_place[node.get_in_arcs()[0]]
                 transition = PetriNet.Transition(name="t@@@" + node_id + "@@@" + node.get_process(), label=None, properties={"process": node.get_process()})
@@ -168,7 +168,7 @@ def apply(bpmn_graph, parameters=None):
                     add_arc_from_to(in_arc_place, transition, net)
                 # add arc from silent transition to outgoing flow place
                 add_arc_from_to(transition, out_arc_place, net)
-        elif isinstance(node, BPMN.ExclusiveGateway):
+        elif isinstance(node, (BPMN.ExclusiveGateway, BPMN.ExclusiveEventBasedGateway)):
             if node.get_gateway_direction() == BPMN.Gateway.Direction.DIVERGING or len(node.get_out_arcs()) > 1:
                 in_arc_place = flow_place[node.get_in_arcs()[0]]
                 out_arc_places = [flow_place[out_arc] for out_arc in node.get_out_arcs()]
