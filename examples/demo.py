@@ -2,10 +2,7 @@ import os
 import procon
 import pandas as pd
 
-
-# IMPORTANT: In case you want to make use of parallel programming, you need to encapsulate the conformance checking
-# code inside a __name__ == '__main__' guard
-if __name__ == '__main__':
+def main():
     # import .bpmn file
     bpmn_graph = procon.import_bpmn(os.path.join("test_data","example.bpmn"))
 
@@ -17,6 +14,8 @@ if __name__ == '__main__':
     parameters = {}
     # should boundary events be treated as labelled activities?
     parameters['include_events'] = True
+    # specify number of physical cores you want to use, default = total_cores - 1
+    parameters["cores"] = 4
     # derive alignemnts between event log and model
     alignments = procon.compute_alignments(df, bpmn_graph, parameters=parameters)
 
@@ -29,3 +28,8 @@ if __name__ == '__main__':
     res = procon.derive_statistics(alignments, df, bpmn_graph, parameters=parameters)
     # save the resulting dataframe to a csv file on your machine
     res.to_csv(os.path.join("conformance-result.csv"))
+
+# IMPORTANT: In case you want to make use of parallel programming, you need to encapsulate the conformance checking
+# code inside a __name__ == '__main__' guard, even if you are using a jupyter notebook!
+if __name__ == '__main__':
+    main()

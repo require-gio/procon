@@ -40,6 +40,7 @@ import re
 import random
 import os
 import psutil
+from tqdm import tqdm
 
 import xml.etree.ElementTree as ET
 import lxml
@@ -49,6 +50,7 @@ import numpy as np
 import pandas as pd
 
 CHUNK_SIZE = 10
+CORES_PARAM = "cores"
 
 def compute_alignment(log, net, initial_marking, final_marking, parameters):
     import pm4pycvxopt
@@ -147,20 +149,21 @@ def compute_alignments(df, bpmn_graph, parameters=None):
     # element ids must me used and ideally, the petri net transitions are named accordingly
     align_parameters = {}
     # align_parameters["ret_tuple_as_trans_desc"] = True
+
     sub_logs = list(chunks(variants, CHUNK_SIZE, False))
     # gets the amount of real physical cores, so no artificial hyperthreading cores are counted
-    num_cores = max(1, psutil.cpu_count(logical=False) - 1)
-    total_calculations = len(sub_logs)
+    num_cores = parameters[CORES_PARAM] if CORES_PARAM in parameters else max(1, psutil.cpu_count(logical=False) - 1)
+
+    proceed = tqdm(desc='Alignments', unit='', total=len(variants))
     with ProcessPoolExecutor(max_workers=num_cores) as executor:
         df_data = []
         futures = []
         for j, sub_log in enumerate(sub_logs):
             futures.append(executor.submit(compute_alignment, sub_log, reset_net, initial_marking, final_marking, align_parameters))
         for i, future in enumerate(as_completed(futures)):
-            if int(total_calculations / 100) > 0 and i % int(total_calculations / 100) == 0:
-                # TODO exchange with bar
-                print(str(int(i / total_calculations * 100) + 1) + " %")
+            proceed.update(len(future.result()))
             df_data.append(future.result())
+    proceed.close()
    
     # put alignments into a list
     alignments = [alignment for alignmentList in df_data for key, alignment in alignmentList for _ in range(variants_dict[key])]
