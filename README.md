@@ -45,15 +45,15 @@ if __name__ == '__main__':
     res.to_csv(os.path.join("conformance-result.csv"))
 ```
 
-Input BPMN model:\
+### Input BPMN model:
 <img src="https://github.com/require-gio/procon/blob/release/images/example.png?raw=true" alt="example" width="700" style="background-color: white"/>
 
 
-Output Table:\
+### Output Table:
 <img src="https://github.com/require-gio/procon/blob/release/images/example-result.png?raw=true" alt="example-result" width="700" style="background-color: white"/>
 
 
-The meaning of the columns is as follows:
+### The meaning of the columns is as follows:
 * Index/Activity: Name of the activity
 * Occurrences: Total occurrences of the activity in the event log
 * ![#3d8a0e](https://via.placeholder.com/15/3d8a0e/000000?text=+) `Correct: Number of times the activity appeared at the desired point in time according to the process model`
