@@ -46,11 +46,11 @@ if __name__ == '__main__':
 ```
 
 Input BPMN model:\
-<img src="https://github.com/require-gio/procon/blob/release/images/example.png" alt="example" width="700" style="background-color: white"/>
+<img src="https://github.com/require-gio/procon/blob/release/images/example.png?raw=true" alt="example" width="700" style="background-color: white"/>
 
 
 Output Table:\
-<img src="https://github.com/require-gio/procon/blob/release/images/example-result.png" alt="example-result" width="700" style="background-color: white"/>
+<img src="https://github.com/require-gio/procon/blob/release/images/example-result.png?raw=true" alt="example-result" width="700" style="background-color: white"/>
 
 
 The meaning of the columns is as follows:
